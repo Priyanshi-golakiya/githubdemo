@@ -1,1 +1,139 @@
-<p>This is new repo.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Scheduler</title>
+    <link rel="stylesheet" href="./bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color:rgba(232, 232, 194, 0.826);
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .task-input input {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px;
+            background: #ffcc00;
+            color: black;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ffaa00;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .task-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-item span {
+            font-weight: bold;
+        }
+
+        .delete-btn {
+            background: red;
+            color: white;
+            padding: 5px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .delete-btn:hover {
+            background: darkred;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Task Scheduler</h1>
+        
+        <div class="task-input">
+            <input type="text" id="taskName" placeholder="Task Name" class="form-control mt-4">
+            <input type="number" id="taskTime" placeholder="Time (sec)" class="form-control mt-4">
+            <button onclick="addTask()" class="form-control mt-4 btn btn-warning">Add Task</button>
+        </div>
+
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        let tasks = [];
+
+        function addTask() {
+            const name = document.getElementById("taskName").value;
+            const time = parseInt(document.getElementById("taskTime").value);
+
+            if (!name || !time || time <= 0) {
+                alert("Enter a valid task and time!");
+                return;
+            }
+
+            const task = { name, time, interval: null };
+            tasks.push(task);
+            displayTasks();
+
+            // Start countdown
+            task.interval = setInterval(() => {
+                task.time--;
+                displayTasks();
+                
+                if (task.time <= 0) {
+                    clearInterval(task.interval);
+                    alert(`Task Completed: ${task.name}`);
+                    removeTask(task);
+                }
+            }, 1000);
+        }
+
+        function displayTasks() {
+            const taskList = document.getElementById("taskList");
+            taskList.innerHTML = "";
+
+            tasks.forEach((task, index) => {
+                let li = document.createElement("li");
+                li.className = "task-item";
+                li.innerHTML = `${task.name} - ${task.time}s`;
+                taskList.appendChild(li);
+            });
+        }
+
+        function removeTask(task) {
+            tasks = tasks.filter(t => t !== task);
+            clearInterval(task.interval);
+            displayTasks();
+        }
+    </script>
+</body>
+</html>
